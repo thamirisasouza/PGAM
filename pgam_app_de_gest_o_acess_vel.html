@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PGAM - Gestão Acessível para Microempreendedores</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Ícones -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Fonte Inter -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              500: '#22c55e',
+              700: '#15803d',
+              800: '#166534',
+              900: '#14532d',
+            },
+            accent: {
+              audio: '#be185d', // Rosa forte acessível para botões de áudio
+              audioHover: '#9d174d',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Estilos de Acessibilidade Personalizados */
+    body {
+      font-size: 18px; /* Base ligeiramente maior para legibilidade */
+      background-color: #f8faf9;
+      color: #111827;
+      user-select: none;
+    }
+
+    /* Modo de Alto Contraste WCAG AAA */
+    body.high-contrast {
+      background-color: #000000 !important;
+      color: #ffffff !important;
+    }
+
+    body.high-contrast .card-bg {
+      background-color: #121212 !important;
+      border: 3px solid #ffff00 !important;
+      color: #ffffff !important;
+    }
+
+    body.high-contrast .text-primary-custom {
+      color: #ffff00 !important;
+    }
+
+    body.high-contrast .btn-custom-primary {
+      background-color: #ffff00 !important;
+      color: #000000 !important;
+      border: 3px solid #ffffff !important;
+      font-weight: 800 !important;
+    }
+
+    body.high-contrast .btn-audio-custom {
+      background-color: #00ffff !important;
+      color: #000000 !important;
+      border: 3px solid #ffffff !important;
+    }
+
+    body.high-contrast input, 
+    body.high-contrast select {
+      background-color: #1a1a1a !important;
+      color: #ffffff !important;
+      border: 3px solid #ffff00 !important;
+    }
+
+    /* Animação do Indicador de Voz */
+    @keyframes pulse-audio {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    .speaking-active {
+      animation: pulse-audio 1s infinite;
+      box-shadow: 0 0 0 6px rgba(190, 24, 93, 0.4);
+    }
+
+    /* Ajuste responsivo para alvos de toque (Min 48px) */
+    .touch-target {
+      min-height: 52px;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col font-sans antialiased pb-24 md:pb-6" id="appBody">
+
+  <!-- BARRA DE ACESSIBILIDADE E UTILITÁRIOS -->
+  <header class="bg-brand-900 text-white shadow-lg sticky top-0 z-50 border-b-4 border-yellow-400">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between flex-wrap gap-2">
+      <!-- Logo / Título -->
+      <div class="flex items-center gap-3">
+        <div class="bg-yellow-400 text-brand-900 w-10 h-10 rounded-xl flex items-center justify-center font-extrabold text-xl shadow">
+          <i class="fa-solid fa-hand-holding-heart"></i>
+        </div>
+        <div>
+          <h1 class="text-xl font-black leading-none tracking-wide text-yellow-300">PGAM</h1>
+          <p class="text-xs text-brand-100 font-medium">Gestão Simples & Acessível</p>
+        </div>
+      </div>
+
+      <!-- Controles Rápidos de Acessibilidade -->
+      <div class="flex items-center gap-2">
+        <!-- Controle de Contraste -->
+        <button onclick="toggleHighContrast()" aria-label="Alternar Modo de Alto Contraste" class="bg-brand-800 hover:bg-brand-700 text-yellow-300 px-3 py-2 rounded-xl text-sm font-bold flex items-center gap-1.5 border border-brand-700 touch-target">
+          <i class="fa-solid fa-circle-half-stroke text-base"></i>
+          <span class="hidden sm:inline">Contraste</span>
+        </button>
+
+        <!-- Controle de Tamanho de Fonte -->
+        <div class="flex bg-brand-800 rounded-xl p-1 border border-brand-700">
+          <button onclick="changeFontSize('small')" aria-label="Fonte Pequena" class="px-2 py-1 text-xs font-bold hover:bg-brand-700 rounded text-white">A-</button>
+          <button onclick="changeFontSize('normal')" aria-label="Fonte Normal" class="px-2 py-1 text-xs font-bold hover:bg-brand-700 rounded text-yellow-300">A</button>
+          <button onclick="changeFontSize('large')" aria-label="Fonte Grande" class="px-2 py-1 text-sm font-bold hover:bg-brand-700 rounded text-white">A+</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTEÚDO PRINCIPAL (MUDANÇA DE ABAS) -->
+  <main class="flex-grow max-w-4xl w-full mx-auto p-4 md:p-6 space-y-6">
+
+    <!-- BARRA GLOBAL DE ÁUDIO GUIADO DA TELA ATUAL -->
+    <section class="card-bg bg-accent-audio text-white p-4 rounded-2xl shadow-md flex items-center justify-between gap-4 border-2 border-pink-400">
+      <div class="flex items-center gap-3">
+        <i class="fa-solid fa-volume-high text-2xl text-yellow-300 animate-bounce"></i>
+        <div>
+          <p class="text-xs font-bold uppercase tracking-wider text-pink-200">Assistente de Voz</p>
+          <p class="text-sm md:text-base font-semibold" id="audioSectionGuide">Clique no botão para ouvir o que está nesta tela.</p>
+        </div>
+      </div>
+      <button onclick="speakCurrentTab()" id="btnAudioMain" aria-label="Ouvir instruções da tela atual em voz alta" class="btn-audio-custom bg-white text-accent-audio font-black px-4 py-3 rounded-xl shadow-lg hover:bg-pink-50 transition active:scale-95 flex items-center gap-2 whitespace-nowrap touch-target">
+        <i class="fa-solid fa-play"></i>
+        <span>Ouvir Tela</span>
+      </button>
+    </section>
+
+    <!-- TELA 1: RESUMO DO CAIXA / PAINEL INICIAL -->
+    <section id="tab-dashboard" class="tab-content space-y-6">
+      
+      <!-- Cartão Principal de Lucro -->
+      <div class="card-bg bg-brand-900 text-white p-6 rounded-3xl shadow-xl border-4 border-brand-700 relative overflow-hidden">
+        <div class="relative z-10 space-y-2">
+          <span class="inline-block bg-brand-800 text-brand-100 font-bold px-3 py-1 rounded-full text-xs uppercase tracking-wider">
+            <i class="fa-solid fa-wallet mr-1"></i> Resumo Financeiro
+          </span>
+          <p class="text-sm text-brand-100 font-medium">Sobrou no seu Bolso (Lucro Real):</p>
+          <div class="text-4xl md:text-5xl font-black text-yellow-300 tracking-tight" id="txtSaldoTotal">R$ 0,00</div>
+          <p class="text-xs text-brand-100 pt-1" id="txtSaldoSubtext">Calculado com base no seu caixa do mês.</p>
+        </div>
+      </div>
+
+      <!-- Indicadores Visuais de Entradas e Saídas -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Entrada -->
+        <div class="card-bg bg-white p-5 rounded-2xl shadow-md border-l-8 border-green-500 flex items-center justify-between">
+          <div>
+            <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Dinheiro que Entrou (+)</p>
+            <p class="text-2xl md:text-3xl font-black text-green-700" id="txtEntradasTotal">R$ 0,00</p>
+          </div>
+          <div class="w-12 h-12 bg-green-100 text-green-700 rounded-2xl flex items-center justify-center text-2xl font-bold">
+            <i class="fa-solid fa-arrow-down-left"></i>
+          </div>
+        </div>
+
+        <!-- Saída -->
+        <div class="card-bg bg-white p-5 rounded-2xl shadow-md border-l-8 border-red-500 flex items-center justify-between">
+          <div>
+            <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Dinheiro que Saiu (-)</p>
+            <p class="text-2xl md:text-3xl font-black text-red-700" id="txtSaidasTotal">R$ 0,00</p>
+          </div>
+          <div class="w-12 h-12 bg-red-100 text-red-700 rounded-2xl flex items-center justify-center text-2xl font-bold">
+            <i class="fa-solid fa-arrow-up-right"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lista de Últimas Anotações -->
+      <div class="card-bg bg-white p-5 rounded-2xl shadow-md border border-gray-200 space-y-4">
+        <div class="flex items-center justify-between border-b pb-3">
+          <h2 class="text-lg font-black text-gray-900 text-primary-custom flex items-center gap-2">
+            <i class="fa-solid fa-list-check text-brand-700"></i>
+            Últimas Movimentações
+          </h2>
+          <button onclick="limparHistorico()" class="text-xs text-red-600 font-bold hover:underline">
+            Limpar Registros
+          </button>
+        </div>
+
+        <div id="listaTransacoes" class="space-y-3">
+          <!-- Transações são inseridas via JavaScript -->
+        </div>
+      </div>
+    </section>
+
+    <!-- TELA 2: REGISTRAR CAIXA (ENTRADAS E SAÍDAS) -->
+    <section id="tab-caixa" class="tab-content hidden space-y-6">
+      <div class="card-bg bg-white p-6 rounded-3xl shadow-lg border border-gray-200 space-y-5">
+        <div class="border-b pb-3">
+          <h2 class="text-xl font-black text-brand-900 text-primary-custom">Anotar Movimentação de Dinheiro</h2>
+          <p class="text-xs text-gray-600">Registre vendas ou gastos do dia de forma rápida.</p>
+        </div>
+
+        <!-- Seletor de Tipo de Registro (Entrada vs Saída) -->
+        <div class="grid grid-cols-2 gap-3">
+          <button type="button" id="btnTipoEntrada" onclick="setTipoTransacao('entrada')" class="touch-target border-4 border-green-600 bg-green-100 text-green-900 font-black rounded-2xl p-3 flex items-center justify-center gap-2 text-base">
+            <i class="fa-solid fa-circle-plus text-xl text-green-700"></i>
+            <span>ENTROU DINHEIRO</span>
+          </button>
+          <button type="button" id="btnTipoSaida" onclick="setTipoTransacao('saida')" class="touch-target border-2 border-gray-300 bg-gray-50 text-gray-700 font-bold rounded-2xl p-3 flex items-center justify-center gap-2 text-base">
+            <i class="fa-solid fa-circle-minus text-xl text-red-600"></i>
+            <span>SAIU DINHEIRO</span>
+          </button>
+        </div>
+
+        <!-- Formulário Simples -->
+        <form onsubmit="salvarTransacao(event)" class="space-y-4">
+          <div>
+            <label for="inpValorTransacao" class="block text-sm font-bold text-gray-900 mb-1 text-primary-custom">
+              Valor em Reais (R$):
+            </label>
+            <input type="number" id="inpValorTransacao" step="0.01" min="0.01" required placeholder="Ex: 45,00" class="w-full text-2xl font-bold p-4 border-2 border-gray-300 rounded-2xl focus:border-brand-700 focus:outline-none touch-target">
+          </div>
+
+          <div>
+            <label for="inpDescricaoTransacao" class="block text-sm font-bold text-gray-900 mb-1 text-primary-custom">
+              O que foi isso? (Opcional)
+            </label>
+            <input type="text" id="inpDescricaoTransacao" placeholder="Ex: Venda de Caderno Artesanal" class="w-full text-lg p-4 border-2 border-gray-300 rounded-2xl focus:border-brand-700 focus:outline-none touch-target">
+          </div>
+
+          <!-- Botão Principal de Gravação -->
+          <button type="submit" class="btn-custom-primary w-full bg-brand-700 hover:bg-brand-800 text-white font-black text-xl p-5 rounded-2xl shadow-xl transition active:scale-98 flex items-center justify-center gap-3 touch-target">
+            <i class="fa-solid fa-floppy-disk text-2xl"></i>
+            <span>SALVAR NO MEU CAIXA</span>
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- TELA 3: CALCULADORA DE PREÇO DE ARTESANATO -->
+    <section id="tab-calculadora" class="tab-content hidden space-y-6">
+      <div class="card-bg bg-white p-6 rounded-3xl shadow-lg border border-gray-200 space-y-5">
+        <div class="border-b pb-3">
+          <h2 class="text-xl font-black text-brand-900 text-primary-custom">Calculadora de Preço do Produto</h2>
+          <p class="text-xs text-gray-600">Descubra quanto cobrar para nunca mais ter prejuízo no seu trabalho.</p>
+        </div>
+
+        <div class="space-y-4">
+          <!-- Nome do Produto -->
+          <div>
+            <label for="inpNomeProduto" class="block text-sm font-bold text-gray-900 mb-1 text-primary-custom">
+              Nome da Peça ou Produto:
+            </label>
+            <input type="text" id="inpNomeProduto" placeholder="Ex: Bloco Personalizado A5" class="w-full text-lg p-3 border-2 border-gray-300 rounded-xl focus:border-brand-700 focus:outline-none">
+          </div>
+
+          <!-- 1. Materiais -->
+          <div class="bg-amber-50 p-4 rounded-2xl border-2 border-amber-200 space-y-2">
+            <label for="inpCustoMaterial" class="block text-sm font-black text-amber-900">
+              1. Custo dos Materiais (R$):
+            </label>
+            <p class="text-xs text-amber-800">Soma de tudo o que gastou: papel, fita, cola, embalagem...</p>
+            <input type="number" id="inpCustoMaterial" step="0.01" min="0" placeholder="Ex: 12.50" oninput="calcularPrecoProduto()" class="w-full text-xl font-bold p-3 border-2 border-amber-300 rounded-xl focus:outline-none bg-white">
+          </div>
+
+          <!-- 2. Mão de Obra / Tempo -->
+          <div class="bg-blue-50 p-4 rounded-2xl border-2 border-blue-200 space-y-2">
+            <label for="inpMaoDeObra" class="block text-sm font-black text-blue-900">
+              2. Seu Tempo de Trabalho (R$):
+            </label>
+            <p class="text-xs text-blue-800">Quanto vale as horas que você usou para fazer esta peça.</p>
+            <input type="number" id="inpMaoDeObra" step="0.01" min="0" placeholder="Ex: 8.00" oninput="calcularPrecoProduto()" class="w-full text-xl font-bold p-3 border-2 border-blue-300 rounded-xl focus:outline-none bg-white">
+          </div>
+
+          <!-- 3. Porcentagem de Lucro -->
+          <div class="bg-emerald-50 p-4 rounded-2xl border-2 border-emerald-200 space-y-2">
+            <label for="inpLucroDesejado" class="block text-sm font-black text-emerald-900">
+              3. Porcentagem de Lucro (%):
+            </label>
+            <p class="text-xs text-emerald-800">Recomendado: no mínimo 50% para guardar dinheiro no negócio.</p>
+            <input type="number" id="inpLucroDesejado" value="50" min="0" placeholder="Ex: 50" oninput="calcularPrecoProduto()" class="w-full text-xl font-bold p-3 border-2 border-emerald-300 rounded-xl focus:outline-none bg-white">
+          </div>
+        </div>
+
+        <!-- RESULTADO DO CÁLCULO EM DESTAQUE -->
+        <div class="card-bg bg-brand-900 text-white p-6 rounded-2xl shadow-xl border-4 border-yellow-400 text-center space-y-2">
+          <p class="text-xs font-bold uppercase tracking-wider text-yellow-300">Preço Sugerido para Cobrar do Cliente:</p>
+          <div class="text-4xl md:text-5xl font-black text-yellow-300" id="txtPrecoSugerido">R$ 0,00</div>
+          
+          <div class="text-xs text-brand-100 flex justify-center gap-4 pt-2 border-t border-brand-800">
+            <span>Custo Total: <strong id="txtCustoTotalDetalhe">R$ 0,00</strong></span>
+            <span>|</span>
+            <span>Seu Lucro: <strong id="txtLucroReaisDetalhe">R$ 0,00</strong></span>
+          </div>
+        </div>
+
+        <!-- Botão Ouvir Preço -->
+        <button type="button" onclick="ouvirResultadoCalculo()" class="btn-audio-custom w-full bg-accent-audio hover:bg-accent-audioHover text-white font-black text-lg p-4 rounded-2xl shadow-md transition flex items-center justify-center gap-2 touch-target">
+          <i class="fa-solid fa-volume-high text-xl"></i>
+          <span>OUVIR PREÇO CALCULADO EM VOZ ALTA</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- TELA 4: ACESSIBILIDADE E SOBRE -->
+    <section id="tab-ajuda" class="tab-content hidden space-y-6">
+      <div class="card-bg bg-white p-6 rounded-3xl shadow-lg border border-gray-200 space-y-5">
+        <div class="border-b pb-3">
+          <h2 class="text-xl font-black text-brand-900 text-primary-custom">Guia de Uso Acessível</h2>
+          <p class="text-xs text-gray-600">Recursos inclusivos pensados para facilitar o seu dia a dia.</p>
+        </div>
+
+        <div class="space-y-4 text-sm text-gray-800">
+          <div class="p-4 bg-gray-50 rounded-2xl border border-gray-200 space-y-1">
+            <h3 class="font-bold text-base text-brand-900 flex items-center gap-2">
+              <i class="fa-solid fa-volume-low text-accent-audio"></i> Leitura por Voz
+            </h3>
+            <p>Em todas as telas, você pode clicar no botão rosa no topo da página para ouvir em alto e bom som as informações principais.</p>
+          </div>
+
+          <div class="p-4 bg-gray-50 rounded-2xl border border-gray-200 space-y-1">
+            <h3 class="font-bold text-base text-brand-900 flex items-center gap-2">
+              <i class="fa-solid fa-circle-half-stroke text-yellow-600"></i> Modo Alto Contraste
+            </h3>
+            <p>Se tiver dificuldades para enxergar no sol ou baixa visão, clique no botão <strong>Contraste</strong> no topo do aplicativo. A tela ficará com fundo preto e letras amarelas brilhantes.</p>
+          </div>
+
+          <div class="p-4 bg-gray-50 rounded-2xl border border-gray-200 space-y-1">
+            <h3 class="font-bold text-base text-brand-900 flex items-center gap-2">
+              <i class="fa-solid fa-wifi text-green-700"></i> Funciona sem Internet
+            </h3>
+            <p>Seus dados ficam gravados diretamente na memória do seu celular. Você não precisa gastar seus dados móveis para usar a ferramenta.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- BARRA DE NAVEGAÇÃO INFERIOR (FIXA PARA FACILITAR TOQUE COM O POLEGAR) -->
+  <nav class="fixed bottom-0 left-0 right-0 bg-white border-t-4 border-brand-800 shadow-2xl z-40">
+    <div class="max-w-4xl mx-auto grid grid-cols-4 gap-1 p-2">
+      <!-- Aba 1: Resumo -->
+      <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-tab-btn flex flex-col items-center justify-center py-2 px-1 rounded-xl text-brand-900 font-extrabold bg-brand-100 touch-target">
+        <i class="fa-solid fa-chart-pie text-xl mb-1"></i>
+        <span class="text-xs">Início</span>
+      </button>
+
+      <!-- Aba 2: Registrar Caixa -->
+      <button onclick="switchTab('caixa')" id="nav-caixa" class="nav-tab-btn flex flex-col items-center justify-center py-2 px-1 rounded-xl text-gray-600 font-bold hover:bg-gray-100 touch-target">
+        <i class="fa-solid fa-cash-register text-xl mb-1"></i>
+        <span class="text-xs">Caixa</span>
+      </button>
+
+      <!-- Aba 3: Calculadora -->
+      <button onclick="switchTab('calculadora')" id="nav-calculadora" class="nav-tab-btn flex flex-col items-center justify-center py-2 px-1 rounded-xl text-gray-600 font-bold hover:bg-gray-100 touch-target">
+        <i class="fa-solid fa-calculator text-xl mb-1"></i>
+        <span class="text-xs">Preço</span>
+      </button>
+
+      <!-- Aba 4: Ajuda / Acessibilidade -->
+      <button onclick="switchTab('ajuda')" id="nav-ajuda" class="nav-tab-btn flex flex-col items-center justify-center py-2 px-1 rounded-xl text-gray-600 font-bold hover:bg-gray-100 touch-target">
+        <i class="fa-solid fa-universal-access text-xl mb-1"></i>
+        <span class="text-xs">Ajuda</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- TOAST / CAIXA DE NOTIFICAÇÃO VISUAL E AUDITIVA -->
+  <div id="toastNotification" class="fixed top-20 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white font-bold px-6 py-4 rounded-2xl shadow-2xl z-50 transition-all duration-300 opacity-0 pointer-events-none flex items-center gap-3 border-2 border-yellow-400 max-w-xs w-full text-center">
+    <i class="fa-solid fa-bell text-yellow-400 text-xl" id="toastIcon"></i>
+    <span id="toastMessage" class="text-sm">Mensagem do sistema</span>
+  </div>
+
+  <!-- JAVASCRIPT NATIVO SEM DEPENDÊNCIAS PESADAS -->
+  <script>
+    // Estado Global da Aplicação
+    let currentTab = 'dashboard';
+    let currentTipoTransacao = 'entrada';
+    
+    // Dados salvos localmente
+    let transacoes = JSON.parse(localStorage.getItem('pgam_transacoes')) || [];
+    let configAcessibilidade = JSON.parse(localStorage.getItem('pgam_config')) || {
+      highContrast: false,
+      fontSize: 'normal'
+    };
+
+    // Função para Ler Textos em Voz Alta
+    function speakText(text) {
+      if ('speechSynthesis' in window) {
+        // Interrompe fala anterior para não sobrepor
+        window.speechSynthesis.cancel();
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'pt-BR';
+        utterance.rate = 0.95; // Velocidade ligeiramente reduzida para clareza
+
+        // Animação visual no botão
+        const btnAudio = document.getElementById('btnAudioMain');
+        btnAudio.classList.add('speaking-active');
+
+        utterance.onend = function() {
+          btnAudio.classList.remove('speaking-active');
+        };
+
+        window.speechSynthesis.speak(utterance);
+      } else {
+        showToast("O seu dispositivo não suporta leitura em voz alta.", "warning");
+      }
+    }
+
+    // Guia Auditivo da Aba Ativa
+    function speakCurrentTab() {
+      let textoGuia = "";
+
+      if (currentTab === 'dashboard') {
+        const saldo = document.getElementById('txtSaldoTotal').innerText;
+        const entradas = document.getElementById('txtEntradasTotal').innerText;
+        const saidas = document.getElementById('txtSaidasTotal').innerText;
+        textoGuia = `Tela do Resumo Financeiro. No seu bolso sobrou o valor de ${saldo}. Seu dinheiro total que entrou foi ${entradas}, e o total de gastos foi ${saidas}.`;
+      } else if (currentTab === 'caixa') {
+        textoGuia = "Tela de Anotação de Caixa. Escolha se entrou dinheiro de venda ou se saiu dinheiro de gasto. Depois digite o valor e clique em salvar no caixa.";
+      } else if (currentTab === 'calculadora') {
+        const preco = document.getElementById('txtPrecoSugerido').innerText;
+        textoGuia = `Tela da Calculadora de Preço de Produto. O preço ideal de venda calculado para este produto é de ${preco}.`;
+      } else if (currentTab === 'ajuda') {
+        textoGuia = "Tela do Guia de Acessibilidade. Aqui você aprende como utilizar os recursos de áudio, alto contraste e uso offline do aplicativo.";
+      }
+
+      speakText(textoGuia);
+    }
+
+    function switchTab(tabName) {
+      currentTab = tabName;
+
+      // Ocultar todas as telas
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      
+      // Mostrar tela selecionada
+      document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+
+      // Atualizar estilo dos botões da barra inferior
+      document.querySelectorAll('.nav-tab-btn').forEach(btn => {
+        btn.classList.remove('bg-brand-100', 'text-brand-900', 'font-extrabold');
+        btn.classList.add('text-gray-600', 'font-bold');
+      });
+
+      const activeBtn = document.getElementById(`nav-${tabName}`);
+      activeBtn.classList.add('bg-brand-100', 'text-brand-900', 'font-extrabold');
+      activeBtn.classList.remove('text-gray-600');
+
+      // Atualizar texto explicativo da barra de voz
+      const guideText = document.getElementById('audioSectionGuide');
+      if (tabName === 'dashboard') guideText.innerText = "Resumo dos ganhos e gastos do mês.";
+      if (tabName === 'caixa') guideText.innerText = "Anotar novo dinheiro que entrou ou saiu.";
+      if (tabName === 'calculadora') guideText.innerText = "Calcular preço certo para suas peças.";
+      if (tabName === 'ajuda') guideText.innerText = "Recursos de acessibilidade e ajuda.";
+    }
+
+    function setTipoTransacao(tipo) {
+      currentTipoTransacao = tipo;
+      const btnEntrada = document.getElementById('btnTipoEntrada');
+      const btnSaida = document.getElementById('btnTipoSaida');
+
+      if (tipo === 'entrada') {
+        btnEntrada.className = "touch-target border-4 border-green-600 bg-green-100 text-green-900 font-black rounded-2xl p-3 flex items-center justify-center gap-2 text-base";
+        btnSaida.className = "touch-target border-2 border-gray-300 bg-gray-50 text-gray-700 font-bold rounded-2xl p-3 flex items-center justify-center gap-2 text-base";
+        speakText("Selecionado: Entrou Dinheiro");
+      } else {
+        btnSaida.className = "touch-target border-4 border-red-600 bg-red-100 text-red-900 font-black rounded-2xl p-3 flex items-center justify-center gap-2 text-base";
+        btnEntrada.className = "touch-target border-2 border-gray-300 bg-gray-50 text-gray-700 font-bold rounded-2xl p-3 flex items-center justify-center gap-2 text-base";
+        speakText("Selecionado: Saiu Dinheiro");
+      }
+    }
+
+    function salvarTransacao(e) {
+      e.preventDefault();
+      const inpValor = document.getElementById('inpValorTransacao');
+      const inpDesc = document.getElementById('inpDescricaoTransacao');
+
+      const valor = parseFloat(inpValor.value);
+      if (isNaN(valor) || valor <= 0) {
+        showToast("Por favor, digite um valor válido.", "warning");
+        speakText("Por favor, digite um valor maior que zero.");
+        return;
+      }
+
+      const novaTransacao = {
+        id: Date.now(),
+        tipo: currentTipoTransacao,
+        valor: valor,
+        descricao: inpDesc.value.trim() || (currentTipoTransacao === 'entrada' ? 'Venda' : 'Gasto'),
+        data: new Date().toLocaleDateString('pt-BR')
+      };
+
+      transacoes.unshift(novaTransacao);
+      localStorage.setItem('pgam_transacoes', JSON.stringify(transacoes));
+
+      // Limpar formulário
+      inpValor.value = '';
+      inpDesc.value = '';
+
+      // Atualizar interface
+      renderDashboard();
+      
+      const msgSucesso = `Sucesso! Salvo ${novaTransacao.tipo === 'entrada' ? 'ganho' : 'gasto'} de R$ ${valor.toFixed(2)}`;
+      showToast(msgSucesso, "success");
+      speakText(msgSucesso);
+
+      // Voltar para a tela inicial
+      switchTab('dashboard');
+    }
+
+    function renderDashboard() {
+      let entradas = 0;
+      let saidas = 0;
+      const containerLista = document.getElementById('listaTransacoes');
+      containerLista.innerHTML = '';
+
+      transacoes.forEach(t => {
+        if (t.tipo === 'entrada') entradas += t.valor;
+        if (t.tipo === 'saida') saidas += t.valor;
+
+        // Elemento da Transação
+        const item = document.createElement('div');
+        item.className = `p-3 rounded-xl border-l-4 flex items-center justify-between ${
+          t.tipo === 'entrada' ? 'bg-green-50 border-green-600' : 'bg-red-50 border-red-600'
+        }`;
+
+        item.innerHTML = `
+          <div>
+            <p class="font-bold text-sm text-gray-900">${t.descricao}</p>
+            <p class="text-xs text-gray-500">${t.data}</p>
+          </div>
+          <span class="font-black text-base ${t.tipo === 'entrada' ? 'text-green-700' : 'text-red-700'}">
+            ${t.tipo === 'entrada' ? '+' : '-'} R$ ${t.valor.toFixed(2).replace('.', ',')}
+          </span>
+        `;
+        containerLista.appendChild(item);
+      });
+
+      if (transacoes.length === 0) {
+        containerLista.innerHTML = `<p class="text-sm text-gray-500 text-center py-4">Nenhuma anotação registrada ainda.</p>`;
+      }
+
+      const saldo = entradas - saidas;
+
+      document.getElementById('txtEntradasTotal').innerText = `R$ ${entradas.toFixed(2).replace('.', ',')}`;
+      document.getElementById('txtSaidasTotal').innerText = `R$ ${saidas.toFixed(2).replace('.', ',')}`;
+      document.getElementById('txtSaldoTotal').innerText = `R$ ${saldo.toFixed(2).replace('.', ',')}`;
+    }
+
+    function limparHistorico() {
+      if (transacoes.length === 0) return;
+      transacoes = [];
+      localStorage.removeItem('pgam_transacoes');
+      renderDashboard();
+      showToast("Histórico limpo com sucesso.", "info");
+      speakText("Seu histórico de caixa foi limpo.");
+    }
+
+    function calcularPrecoProduto() {
+      const material = parseFloat(document.getElementById('inpCustoMaterial').value) || 0;
+      const maoDeObra = parseFloat(document.getElementById('inpMaoDeObra').value) || 0;
+      const percentualLucro = parseFloat(document.getElementById('inpLucroDesejado').value) || 0;
+
+      const custoTotal = material + maoDeObra;
+      const valorLucro = custoTotal * (percentualLucro / 100);
+      const precoFinal = custoTotal + valorLucro;
+
+      document.getElementById('txtPrecoSugerido').innerText = `R$ ${precoFinal.toFixed(2).replace('.', ',')}`;
+      document.getElementById('txtCustoTotalDetalhe').innerText = `R$ ${custoTotal.toFixed(2).replace('.', ',')}`;
+      document.getElementById('txtLucroReaisDetalhe').innerText = `R$ ${valorLucro.toFixed(2).replace('.', ',')}`;
+    }
+
+    function ouvirResultadoCalculo() {
+      const preco = document.getElementById('txtPrecoSugerido').innerText;
+      const custo = document.getElementById('txtCustoTotalDetalhe').innerText;
+      const lucro = document.getElementById('txtLucroReaisDetalhe').innerText;
+
+      const texto = `O preço ideal para cobrar do cliente é de ${preco}. O custo de produção foi de ${custo}, e você terá ${lucro} de lucro limpo.`;
+      speakText(texto);
+    }
+
+    function toggleHighContrast() {
+      configAcessibilidade.highContrast = !configAcessibilidade.highContrast;
+      document.body.classList.toggle('high-contrast', configAcessibilidade.highContrast);
+      localStorage.setItem('pgam_config', JSON.stringify(configAcessibilidade));
+
+      const status = configAcessibilidade.highContrast ? "ativado" : "desativado";
+      showToast(`Modo alto contraste ${status}.`, "info");
+      speakText(`Alto contraste ${status}`);
+    }
+
+    function changeFontSize(size) {
+      configAcessibilidade.fontSize = size;
+      if (size === 'small') document.body.style.fontSize = '16px';
+      if (size === 'normal') document.body.style.fontSize = '18px';
+      if (size === 'large') document.body.style.fontSize = '22px';
+      
+      localStorage.setItem('pgam_config', JSON.stringify(configAcessibilidade));
+      showToast(`Tamanho do texto alterado.`, "info");
+    }
+
+    function showToast(message, type = "info") {
+      const toast = document.getElementById('toastNotification');
+      const toastMsg = document.getElementById('toastMessage');
+      
+      toastMsg.innerText = message;
+      toast.classList.remove('opacity-0', 'pointer-events-none');
+      toast.classList.add('opacity-100');
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'pointer-events-none');
+        toast.classList.remove('opacity-100');
+      }, 3500);
+    }
+
+    window.onload = function() {
+      // Restaurar configurações salvos
+      if (configAcessibilidade.highContrast) {
+        document.body.classList.add('high-contrast');
+      }
+      changeFontSize(configAcessibilidade.fontSize || 'normal');
+
+      // Renderizar caixa inicial
+      renderDashboard();
+      calcularPrecoProduto();
+    };
+  </script>
+</body>
+</html>
