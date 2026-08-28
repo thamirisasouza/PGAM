@@ -11,10 +11,6 @@
 
 ## 📸 Demonstração Visual
 
-*(Substitua os links abaixo pelas capturas de tela ou GIFs do seu projeto)*
-
-| Tela Inicial & Alto Contraste | Calculadora de Custos | Leitor de Tela em Ação (GIF) |
-| :---: | :---: | :---: |
 | <img width="1044" height="883" alt="Captura de Tela (156)" src="https://github.com/user-attachments/assets/260c5abe-7074-4a70-9678-0d5d318aa88e" />
 | <img width="1044" height="883" alt="Captura de Tela (157)" src="https://github.com/user-attachments/assets/260c5abe-7074-4a70-9678-0d5d318aa88e" />
 | <img width="1044" height="883" alt="Captura de Tela (158)" src="https://github.com/user-attachments/assets/260c5abe-7074-4a70-9678-0d5d318aa88e" />
