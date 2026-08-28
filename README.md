@@ -12,7 +12,7 @@
 
 ## 📸 Demonstração Visual
 
- !("/Captura de Tela (156).png") | 
+ !("PGAM/Captura de Tela (156).png") | 
  !("/Captura de Tela (157).png") |
  !("/Captura de Tela (158).png")
 
