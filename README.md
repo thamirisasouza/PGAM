@@ -12,9 +12,17 @@
 
 ## 📸 Demonstração Visual
 
-![Texto Alternativo](./156.png) 
-![Texto Alternativo](./157.png) 
-![Texto Alternativo](./158.png) 
+<table>
+  <tr>
+    <td><img src="./156.png" width="300px"></td>
+    <td><img src="./157.png" width="300px"></td>
+    <td><img src="./158.png" width="300px"></td>
+  </tr>
+</table>
+
+# ![Texto Alternativo](./156.png) 
+# [Texto Alternativo](./157.png) 
+# [Texto Alternativo](./158.png) 
 
 ---
 
