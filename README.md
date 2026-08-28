@@ -20,11 +20,10 @@
   </tr>
 </table>
 
-# ![Texto Alternativo](./156.png) 
-# [Texto Alternativo](./157.png) 
-# [Texto Alternativo](./158.png) 
+
 
 ---
+
 
 ## 📖 Visão Geral e Contexto (O Problema)
 
