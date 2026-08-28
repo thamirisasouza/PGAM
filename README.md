@@ -11,11 +11,10 @@
 
 
 ## 📸 Demonstração Visual
-| :---: | :---: | :---: |
 
- ![Legenda 1]("https://github.com/thamirisasouza/PGAM/blob/4fa72674ac2adc2b7ba685c3e2ecec562f698a4e/Captura%20de%20Tela%20(158).png") | 
- ![Legenda 1]("https://github.com/user-attachments/assets/b6bec922-150a-4aa4-8d9a-c11507271700") | 
- ![Legenda 1]("https://github.com/user-attachments/assets/97563f86-1f4d-4a06-a933-5f8d2ad21b7d")
+ !("/Captura de Tela (156).png") | 
+ !("/Captura de Tela (157).png") |
+ !("/Captura de Tela (158).png")
 
 
 ---
