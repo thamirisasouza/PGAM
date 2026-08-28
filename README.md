@@ -15,7 +15,11 @@
 
 | Tela Inicial & Alto Contraste | Calculadora de Custos | Leitor de Tela em Ação (GIF) |
 | :---: | :---: | :---: |
-| ![Imagem 1](https://via.placeholder.com/250x400?text=Print+Tela+Inicial) | ![Imagem 2](https://via.placeholder.com/250x400?text=Print+Calculadora) | ![GIF 3](https://via.placeholder.com/250x400?text=GIF+Assistente+Voz) |
+| <img width="1044" height="883" alt="Captura de Tela (156)" src="https://github.com/user-attachments/assets/260c5abe-7074-4a70-9678-0d5d318aa88e" />
+| <img width="1044" height="883" alt="Captura de Tela (157)" src="https://github.com/user-attachments/assets/260c5abe-7074-4a70-9678-0d5d318aa88e" />
+| <img width="1044" height="883" alt="Captura de Tela (158)" src="https://github.com/user-attachments/assets/260c5abe-7074-4a70-9678-0d5d318aa88e" />
+
+
 
 ---
 
