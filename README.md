@@ -11,9 +11,11 @@
 
 ## 📸 Demonstração Visual
 
-| <img width="1044" height="883" alt="Captura de Tela (156)" src="https://github.com/user-attachments/assets/260c5abe-7074-4a70-9678-0d5d318aa88e" />
-| <img width="1044" height="883" alt="Captura de Tela (157)" src="https://github.com/user-attachments/assets/260c5abe-7074-4a70-9678-0d5d318aa88e" />
-| <img width="1044" height="883" alt="Captura de Tela (158)" src="https://github.com/user-attachments/assets/260c5abe-7074-4a70-9678-0d5d318aa88e" />
+<img width="1044" height="886" alt="Captura de Tela (156)" src="https://github.com/user-attachments/assets/59b4f8ed-1b37-4f9e-8b66-53f3efea9f2e" />
+
+<img width="1062" height="888" alt="Captura de Tela (157)" src="https://github.com/user-attachments/assets/b6bec922-150a-4aa4-8d9a-c11507271700" />
+
+<img width="1044" height="883" alt="Captura de Tela (158)" src="https://github.com/user-attachments/assets/97563f86-1f4d-4a06-a933-5f8d2ad21b7d" />
 
 
 
